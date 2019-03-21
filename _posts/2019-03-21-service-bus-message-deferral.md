@@ -28,7 +28,35 @@ This took me a while to work out as the docs at the time didn't have any informa
 
 Here is an example of deferring and placing another message.
 
-<script src="https://gist.github.com/tidusjar/cd1b6d46c95f8a0cbe5d1895c1907ae5.js"></script>
+``` csharp
+private static async Task<bool> DeferMessage(BrokeredMessage message)
+{
+    await message.DeferAsync().ConfigureAwait(false);
+
+    var client = TopicClient.CreateFromConnectionString(ConnectionString, TopicName);
+    var obj = new DeferredMessageModel { SequenceNumber = message.SequenceNumber };
+
+    using (var ms = new MemoryStream())
+    using (var writer = new StreamWriter(ms))
+    using (var jsonWriter = new JsonTextWriter(writer))
+    {                      
+        var ser = new JsonSerializer();
+        ser.Serialize(jsonWriter, obj);
+        jsonWriter.Flush();
+
+        ms.Position = 0;
+
+        await client.SendAsync(new BrokeredMessage(ms)
+        {
+            Properties = { new KeyValuePair<string, object>("deferred", true) },
+            ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddMinutes(-5)
+        }).ConfigureAwait(false);
+    }
+
+    return true;
+}
+```
+
 
 The `DeferredMessageModel` class just has one property of `SequenceNumber` that is 	a `long`.
 
