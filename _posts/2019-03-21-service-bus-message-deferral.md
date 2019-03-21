@@ -79,31 +79,32 @@ private static bool IsDeferredMessage(BrokeredMessage message)
     
 We are just going to check to see if the message has the `deferred` property set, if it has this is a message to retrieve a deferred message.
 To retrieve a deferred message we need to do something like the following:
-
-    if (IsDeferredMessage(message))
-    {
-        var deferralObject = JsonConvert.DeserializeObject<DeferredMessageModel>(json);
-        await message.CompleteAsync(); // Complete this message
-        message = await GetDeferredMessage(storedMessage.SequenceNumber); // get the deferred message
-    }
-    private static async Task<BrokeredMessage> GetDeferredMessage(long sequenceNumber)
-    {
-        var client = 
-            SubscriptionClient.CreateFromConnectionString(Environment.GetEnvironmentVariable("AzureServiceBusPrimary"),
-            TopicName, SubscriptionName);
-        return await client.ReceiveAsync(sequenceNumber).ConfigureAwait(false);
-    }
+``` csharp
+if (IsDeferredMessage(message))
+{
+    var deferralObject = JsonConvert.DeserializeObject<DeferredMessageModel>(json);
+    await message.CompleteAsync(); // Complete this message
+    message = await GetDeferredMessage(storedMessage.SequenceNumber); // get the deferred message
+}
+private static async Task<BrokeredMessage> GetDeferredMessage(long sequenceNumber)
+{
+    var client = 
+        SubscriptionClient.CreateFromConnectionString(Environment.GetEnvironmentVariable("AzureServiceBusPrimary"),
+        TopicName, SubscriptionName);
+    return await client.ReceiveAsync(sequenceNumber).ConfigureAwait(false);
+}
+```
     
 As you can see we need to `Complete` the current message otherwise we will end up getting the dreaded Message Locked Exception and it will be placed back onto the queue to be re-processed (depending on your service bus topic strategy).
 
 Now you have your deferred message that has been delayed for 5 minutes!
 
 There is one more thing, because calling `.Defer()` on a message removes it from the queue you are now managing the lifecycle of the messages. So in your `host.json` configuration you need to tell the Azure Function that you are going to continue managing the lifecycle of the messages, and not to complete the messages automatically when the function completes.  
-
-    {
-      "serviceBus": {
-        "autoComplete": false
-      }
-    }
-    
+``` json
+{
+  "serviceBus": {
+    "autoComplete": false
+  }
+}
+```
 This also means when you have finished processing your message you are going to need to call the `Complete()` method on the `BrokeredMessage` object.
