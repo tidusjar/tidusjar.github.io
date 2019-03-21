@@ -35,18 +35,19 @@ The `DeferredMessageModel` class just has one property of `SequenceNumber` that 
 As you can see the above implementation is pretty simple. Now the key part here is that we are adding a property to the new message stating the it's be deferred.
 
 When we process the message we can check if this is a message to retrieve a deferral or a regular message.
-
-    private static bool IsDeferredMessage(BrokeredMessage message)
+``` csharp
+private static bool IsDeferredMessage(BrokeredMessage message)
+{
+    if (message.Properties.TryGetValue("deferred", out var value))
     {
-        if (message.Properties.TryGetValue("deferred", out var value))
+        if (value is bool deferredResult)
         {
-            if (value is bool deferredResult)
-            {
-                return deferredResult;
-            }
+            return deferredResult;
         }
-        return false;
     }
+    return false;
+}
+```
     
 We are just going to check to see if the message has the `deferred` property set, if it has this is a message to retrieve a deferred message.
 To retrieve a deferred message we need to do something like the following:
