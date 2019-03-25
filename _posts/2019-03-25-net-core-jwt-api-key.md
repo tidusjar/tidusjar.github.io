@@ -1,6 +1,6 @@
 ---
 title: ".Net Core JWT Authentication with an API Key middleware"
-published: false
+published: true
 ---
 
 My question on [Stackoverflow](https://stackoverflow.com/questions/45798325/net-core-web-api-key) and subsequent answer inspired me to write this post as there seems to be quite a lot of frequent visits to that post.
