@@ -3,11 +3,11 @@ title: ".Net Core JWT Authentication with an API Key middleware"
 published: true
 ---
 
-My question on [Stackoverflow](https://stackoverflow.com/questions/45798325/net-core-web-api-key) and subsequent answer inspired me to write this post as there seems to be quite a lot of frequent visits to that post.
+My question on [StackOverflow](https://stackoverflow.com/questions/45798325/net-core-web-api-key) and subsequent answer inspired me to write this post as there seems to be quite a lot of frequent visits to that post.
 
 The requirement was to have a .Net Core application which its primary authentication method is using JWT plugged into the Asp.Net Core Identity membership system.
 
-Once identity has been plugged into your application you should now be able to use the ```[Authorization]`` attributes in your controllers and verify that the user is now logged into the system. But now, if you have some public API's that you want to secure, but not behind a user with a JWT token how do you achieve this?
+Once identity has been plugged into your application you should now be able to use the `[Authorization]` attributes in your controllers and verify that the user is now logged into the system. But now, if you have some public API's that you want to secure, but not behind a user with a JWT token how do you achieve this?
 
 Well the answer is a custom middleware in the asp.net pipeline.
 
