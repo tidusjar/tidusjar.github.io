@@ -32,7 +32,19 @@ public static class StartupExtensions
 
     public static IServiceCollection AddDependancies(this IServiceCollection services)
     {
-        
+        services.AddDbContext<OmbiContext>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<IPrincipal>(sp => sp.GetService<IHttpContextAccessor>().HttpContext.User); 
+        services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+    }
+
+    public static IServiceCollection AddMapping(this IServiceCollection services)
+    {
+        services.AddOmbiMappingProfile();
+        services.AddAutoMapper(expression =>
+        {
+            expression.AddCollectionMappers();
+        });
     }
 }
 
