@@ -6,6 +6,7 @@ plugins:
   - jekyll-github-metadata
   - jemoji
   - jekyll-feed
+  - jekyll-sitemap
 
 permalink: /:year/:month/:day/:title/
 
