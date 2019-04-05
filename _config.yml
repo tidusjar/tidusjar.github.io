@@ -1,5 +1,7 @@
 layout: sidebar
 style: light
+title: "Jamie's Blog"
+description: "Random coding thoughts"
 
 plugins:
   - jekyll-octicons
@@ -7,6 +9,7 @@ plugins:
   - jemoji
   - jekyll-feed
   - jekyll-sitemap
+  - jekyll-seo-tag
 
 permalink: /:year/:month/:day/:title/
 
@@ -28,6 +31,14 @@ projects:
     forks: true
     projects:
     # - repo-name
+  
+social:
+  name: Jamie Rees
+  links:
+    - https://twitter.com/tidusjar
+    - https://www.linkedin.com/in/jamiearees
+    - https://github.com/tidusjar
+    - https://stackoverflow.com/users/3329836/jamie-rees
 
 social_media:
   # behance: your_username
