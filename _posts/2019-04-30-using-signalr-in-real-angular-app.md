@@ -10,7 +10,7 @@ In this example we are going to have a generic way of sending a user notificatio
 
 ###### Backend
 
-Let's start at the backend, so we are going to need to import the Nuget package `[Microsoft.AspNetCore.SignalR](https://www.nuget.org/packages/Microsoft.AspNetCore.SignalR/)` into your main project.
+Let's start at the backend, so we are going to need to import the Nuget package [`Microsoft.AspNetCore.SignalR`](https://www.nuget.org/packages/Microsoft.AspNetCore.SignalR/) into your main project.
 
 Next is to register SignalR as part of your application, so in your `Startup.cs` we are going to want the following:
 
@@ -102,11 +102,12 @@ services.AddJwtBearer(x =>
                 };
             });
 ```
+
 Now that's pretty much the backend code needed to initially setup SignalR.
 
 ###### Frontend
 
-First we need the `[@aspnet/signalr](https://www.npmjs.com/package/@aspnet/signalr)` package installed via NPM (or Yarn 😊).
+First we need the [`@aspnet/signalr`](https://www.npmjs.com/package/@aspnet/signalr) package installed via NPM (or Yarn 😊).
 Now this next bit is a personal preference, but this is how I use SignalR in my frontend, I need to create a new service and we are going to call it the `SignalRNotificationService`
 
 ``` typescript
