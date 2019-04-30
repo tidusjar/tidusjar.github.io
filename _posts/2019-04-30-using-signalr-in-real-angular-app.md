@@ -19,7 +19,7 @@ public IServiceProvider ConfigureServices(IServiceCollection services)
 {
     // Your other stuff
     services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-    ervices.AddSignalR();
+    services.AddSignalR();
 }
 
 public void Configure(IApplicationBuilder app)
@@ -47,7 +47,6 @@ public class NotificationHub : Hub
         return Clients.All.SendAsync(NotificationEvent, data);
     }
 }
-
 ```
 
 This is a basic sample of a hub, and does what it needs to do, it has a single method that will notify ALL the clients of a message.
@@ -56,7 +55,6 @@ If you want to only notify certain clients, then you will need to override the `
 This example was a background job that is triggering the notification message, I am not going to show you how to implement a background job as that is not in scope for this blog, but I'll create a basic controller to show you the basics.
 
 ``` csharp
-
 public class HubController : ControllerBase
 {
     public HubController(IHubContext<NotificationHub> hub)
@@ -80,27 +78,26 @@ So as part of my setup code for the JWT authentication you need to set the `OnMe
 
 ``` csharp
 services.AddJwtBearer(x =>
+{
+    x.Audience = "Audience";
+    x.TokenValidationParameters = tokenValidationParameters;
+    x.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"
+            // If the request is for our hub...
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/hubs")))
             {
-                x.Audience = "Audience";
-                x.TokenValidationParameters = tokenValidationParameters;
-                x.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Query["access_token"];
-
-                        // If the request is for our hub...
-                        var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/hubs")))
-                        {
-                            // Read the token out of the query string
-                            context.Token = accessToken;
-                        }
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                // Read the token out of the query string
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
 ```
 
 Now that's pretty much the backend code needed to initially setup SignalR.
@@ -154,7 +151,6 @@ export class SignalRNotificationService {
         }
     };
 }
-
 ```
 
 Now the key parts here is that we are using the `accessTokenFactory` and then passing it our JWT token so SignalR can put it as part of the query string.
@@ -184,4 +180,3 @@ export class AppComponent implements OnInit {
 To test this all you now need to do is call the `HubController` API and the message that is passed into the route will be logged into the browsers console!
 
 To conclude, I'd personally create an Angular Service for a Hub and then subscribe to the event that is being emitted, ensuring a constant stream of data coming through.
-
